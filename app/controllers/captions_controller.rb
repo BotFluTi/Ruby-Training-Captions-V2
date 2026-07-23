@@ -3,6 +3,16 @@
 class CaptionsController < ApplicationController
   rescue_from ValidationError, with: :handle_caption_input_error
 
+  def index
+    captions = Caption.order(:id)
+
+    render json: {
+      captions: captions.as_json(
+        only: %i[id url text caption_url]
+      )
+    }, status: :ok
+  end
+
   def create
     attributes = CaptionInputJsonParser.new.parse(request.request_parameters)
     caption = Caption.new(attributes)
