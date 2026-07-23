@@ -56,6 +56,14 @@
     <orderEntry type="library" scope="PROVIDED" name="debug (v1.11.1, ruby-4.0.5-p0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="diff-lcs (v1.6.2, ruby-4.0.5-p0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="drb (v2.2.3, ruby-4.0.5-p0) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="dry-configurable (v1.4.0, ruby-4.0.5-p0) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="dry-core (v1.2.0, ruby-4.0.5-p0) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="dry-inflector (v1.3.1, ruby-4.0.5-p0) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="dry-initializer (v3.2.0, ruby-4.0.5-p0) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="dry-logic (v1.6.0, ruby-4.0.5-p0) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="dry-schema (v1.16.0, ruby-4.0.5-p0) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="dry-types (v1.9.1, ruby-4.0.5-p0) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="dry-validation (v1.11.1, ruby-4.0.5-p0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="erb (v6.0.5, ruby-4.0.5-p0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="erubi (v1.13.1, ruby-4.0.5-p0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="ffi (v1.17.4, ruby-4.0.5-p0) [gem]" level="application" />
@@ -107,7 +115,7 @@
     <orderEntry type="library" scope="PROVIDED" name="rspec-mocks (v3.13.8, ruby-4.0.5-p0) [gem]" level="application" />
     <orderEntry type="library" scope="TEST" name="rspec-rails (v8.0.4, ruby-4.0.5-p0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="rspec-support (v3.13.7, ruby-4.0.5-p0) [gem]" level="application" />
-    <orderEntry type="library" scope="PROVIDED" name="rubocop (v1.88.2, ruby-4.0.5-p0) [gem]" level="application" />
+    <orderEntry type="library" scope="TEST" name="rubocop (v1.88.2, ruby-4.0.5-p0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="rubocop-ast (v1.50.0, ruby-4.0.5-p0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="rubocop-performance (v1.26.1, ruby-4.0.5-p0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="rubocop-rails (v2.36.0, ruby-4.0.5-p0) [gem]" level="application" />

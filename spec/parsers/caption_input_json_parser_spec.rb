@@ -22,4 +22,40 @@ RSpec.describe CaptionInputJsonParser do
                                     )
     end
   end
+
+  context "when caption is missing" do
+    let(:body) { {} }
+
+    it "raises a validation error" do
+      expect { caption_attributes }.to raise_error(ValidationError)
+    end
+  end
+
+  context "when url is missing" do
+    let(:body) do
+      {
+        "caption" => {
+          "text" => "Caption text"
+        }
+      }
+    end
+
+    it "raises a validation error" do
+      expect { caption_attributes }.to raise_error(ValidationError)
+    end
+  end
+
+  context "when text is missing" do
+    let(:body) do
+      {
+        "caption" => {
+          "url" => "https://example.com/image.jpg"
+        }
+      }
+    end
+
+    it "raises a validation error" do
+      expect { caption_attributes }.to raise_error(ValidationError)
+    end
+  end
 end

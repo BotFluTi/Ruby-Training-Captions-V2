@@ -5,6 +5,7 @@ gem "sqlite3", ">= 2.1"
 gem "puma", ">= 5.0"
 gem "bcrypt", "~> 3.1"
 gem "mini_magick", "~> 5.3"
+gem "dry-validation", "~> 1.11"
 
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 
