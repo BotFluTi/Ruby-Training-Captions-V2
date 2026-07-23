@@ -40,4 +40,12 @@ class CaptionsController < ApplicationController
       description: "#{error.attribute} parameter #{error.message}."
     }, status: :unprocessable_content
   end
+
+  def handle_failed_download
+    render json: {
+      code: "invalid_parameters",
+      title: "Parameter has an invalid value",
+      description: "url parameter does not point to a downloadable image."
+    }, status: :unprocessable_content
+  end
 end
