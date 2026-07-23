@@ -2,6 +2,8 @@
 
 class CaptionsController < ApplicationController
   rescue_from ValidationError, with: :handle_caption_input_error
+  rescue_from ActiveRecord::RecordNotFound,
+              with: :handle_caption_not_found
 
   def index
     captions = Caption.order(:id)
@@ -31,6 +33,14 @@ class CaptionsController < ApplicationController
     }, status: :created
   end
 
+  def show
+    caption = Caption.find(params[:id])
+
+    render json: {
+      caption: caption.slice(:id, :url, :text, :caption_url)
+    }, status: :ok
+  end
+
   private
 
   def caption_image_url(caption_path)
@@ -57,5 +67,13 @@ class CaptionsController < ApplicationController
       title: "Parameter has an invalid value",
       description: "url parameter does not point to a downloadable image."
     }, status: :unprocessable_content
+  end
+
+  def handle_caption_not_found(_error)
+    render json: {
+      code: "caption_not_found",
+      title: "Caption not found",
+      description: "Caption with id #{params[:id]} was not found."
+    }, status: :not_found
   end
 end
