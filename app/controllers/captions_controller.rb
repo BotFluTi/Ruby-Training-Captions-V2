@@ -4,7 +4,10 @@ class CaptionsController < ApplicationController
   rescue_from ValidationError, with: :render_caption_input_error
 
   def create
-    CaptionInputJsonParser.new.parse(request.request_parameters)
+    attributes = CaptionInputJsonParser.new.parse(request.request_parameters)
+    caption = Caption.new(attributes)
+
+    return head :unprocessable_content unless caption.valid?
   end
 
   private

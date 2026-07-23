@@ -31,4 +31,49 @@ RSpec.describe "POST /captions", type: :request do
                                       )
     end
   end
+
+  context "when url is empty" do
+    let(:body) do
+      {
+        caption: {
+          url: "",
+          text: "Caption text"
+        }
+      }.to_json
+    end
+
+    it "returns status code 422" do
+      expect(response).to have_http_status(:unprocessable_content)
+    end
+  end
+
+  context "when text is empty" do
+    let(:body) do
+      {
+        caption: {
+          url: "https://example.com/image.jpg",
+          text: ""
+        }
+      }.to_json
+    end
+
+    it "returns status code 422" do
+      expect(response).to have_http_status(:unprocessable_content)
+    end
+  end
+
+  context "when text exceeds 266 characters" do
+    let(:body) do
+      {
+        caption: {
+          url: "https://example.com/image.jpg",
+          text: "a" * 267
+        }
+      }.to_json
+    end
+
+    it "returns status code 422" do
+      expect(response).to have_http_status(:unprocessable_content)
+    end
+  end
 end
