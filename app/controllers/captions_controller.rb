@@ -7,12 +7,22 @@ class CaptionsController < ApplicationController
     attributes = CaptionInputJsonParser.new.parse(request.request_parameters)
     caption = Caption.new(attributes)
 
-    return head :unprocessable_content unless caption.valid?
+    render_invalid_caption(caption) unless caption.valid?
   end
 
   private
 
   def render_caption_input_error(error)
     render json: error.errors, status: :bad_request
+  end
+
+  def render_invalid_caption(caption)
+    error = caption.errors.first
+
+    render json: {
+      code: "invalid_parameters",
+      title: "Parameter has an invalid value",
+      description: "#{error.attribute} parameter #{error.message}."
+    }, status: :unprocessable_content
   end
 end

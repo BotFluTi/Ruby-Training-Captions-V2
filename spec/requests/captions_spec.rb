@@ -45,6 +45,14 @@ RSpec.describe "POST /captions", type: :request do
     it "returns status code 422" do
       expect(response).to have_http_status(:unprocessable_content)
     end
+
+    it "returns the invalid parameter error" do
+      expect(response.parsed_body).to eq(
+                                        "code" => "invalid_parameters",
+                                        "title" => "Parameter has an invalid value",
+                                        "description" => "url parameter is blank."
+                                      )
+    end
   end
 
   context "when text is empty" do
