@@ -64,6 +64,30 @@ RSpec.describe "POST /captions", type: :request do
     end
   end
 
+  context "when url has an incorrect name" do
+    let(:body) do
+      {
+        caption: {
+          uri: "https://example.com/image.jpg",
+          text: "Caption text"
+        }
+      }.to_json
+    end
+
+    it "returns status code 400" do
+      expect(response).to have_http_status(:bad_request)
+    end
+
+    it "returns the missing URL error" do
+      expect(response.parsed_body).to eq(
+                                        "code" => "missing_parameters",
+                                        "title" => "Parameter is missing from the request body",
+                                        "description" => "url parameter is missing from the request body. " \
+                                          "It is a required parameter and the request cannot be processed."
+                                      )
+    end
+  end
+
   context "when text is empty" do
     let(:body) do
       {
@@ -76,6 +100,37 @@ RSpec.describe "POST /captions", type: :request do
 
     it "returns status code 422" do
       expect(response).to have_http_status(:unprocessable_content)
+    end
+
+    it "returns the invalid parameter error" do
+      expect(response.parsed_body).to eq(
+                                        "code" => "invalid_parameters",
+                                        "title" => "Parameter has an invalid value",
+                                        "description" => "text parameter is blank."
+                                      )
+    end
+  end
+
+  context "when text is missing" do
+    let(:body) do
+      {
+        caption: {
+          url: "https://example.com/image.jpg"
+        }
+      }.to_json
+    end
+
+    it "returns status code 400" do
+      expect(response).to have_http_status(:bad_request)
+    end
+
+    it "returns the missing parameters error" do
+      expect(response.parsed_body).to eq(
+                                        "code" => "missing_parameters",
+                                        "title" => "Parameter is missing from the request body",
+                                        "description" => "text parameter is missing from the request body. " \
+                                          "It is a required parameter and the request cannot be processed."
+                                      )
     end
   end
 
@@ -122,6 +177,14 @@ RSpec.describe "POST /captions", type: :request do
 
     it "returns status code 422" do
       expect(response).to have_http_status(:unprocessable_content)
+    end
+
+    it "returns the invalid parameter error" do
+      expect(response.parsed_body).to eq(
+                                        "code" => "invalid_parameters",
+                                        "title" => "Parameter has an invalid value",
+                                        "description" => "text parameter is too long (maximum is 266 characters)."
+                                      )
     end
   end
 
