@@ -1,4 +1,9 @@
 Rails.application.routes.draw do
+  get "/captions", to: "captions#index"
+  get "/captions/:id", to: "captions#show"
+  post "/captions", to: "captions#create"
+  delete "/captions/:id", to: "captions#destroy"
+
   post "/memes", to: "memes#create"
   get "/memes/:file",
       to: "memes#show",

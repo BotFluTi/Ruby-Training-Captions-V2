@@ -9,8 +9,8 @@ RSpec.describe "Caption routes", type: :routing do
   end
 
   it "routes GET /captions/:id to show" do
-    expect(get: "/captions/12")
-      .to route_to(controller: "captions", action: "show", id: "12")
+    expect(get: "/captions/1")
+      .to route_to(controller: "captions", action: "show", id: "1")
   end
 
   it "routes POST /captions to create" do
@@ -19,7 +19,7 @@ RSpec.describe "Caption routes", type: :routing do
   end
 
   it "routes DELETE /captions/:id to destroy" do
-    expect(delete: "/captions/12")
-      .to route_to(controller: "captions", action: "destroy", id: "12")
+    expect(delete: "/captions/1")
+      .to route_to(controller: "captions", action: "destroy", id: "1")
   end
 end
