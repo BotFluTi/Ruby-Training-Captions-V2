@@ -1,22 +1,34 @@
 # frozen_string_literal: true
 
 class CaptionsController < ApplicationController
-  rescue_from ValidationError, with: :render_caption_input_error
+  rescue_from ValidationError, with: :handle_caption_input_error
 
   def create
     attributes = CaptionInputJsonParser.new.parse(request.request_parameters)
     caption = Caption.new(attributes)
 
-    render_invalid_caption(caption) unless caption.valid?
+    return handle_invalid_caption(caption) unless caption.valid?
+
+    caption_path = CaptionService.create(caption)
+    caption.caption_url = caption_image_url(caption_path)
+    caption.save!
+
+    render json: {
+      caption: caption.slice(:id, :url, :text, :caption_url)
+    }, status: :created
   end
 
   private
 
-  def render_caption_input_error(error)
+  def caption_image_url(caption_path)
+    "#{request.base_url}/images/#{File.basename(caption_path)}"
+  end
+
+  def handle_caption_input_error(error)
     render json: error.errors, status: :bad_request
   end
 
-  def render_invalid_caption(caption)
+  def handle_invalid_caption(caption)
     error = caption.errors.first
 
     render json: {
