@@ -10,6 +10,9 @@ class CaptionsController < ApplicationController
     return handle_invalid_caption(caption) unless caption.valid?
 
     caption_path = CaptionService.create(caption)
+
+    return handle_failed_download unless caption_path
+
     caption.caption_url = caption_image_url(caption_path)
     caption.save!
 

@@ -79,6 +79,37 @@ RSpec.describe "POST /captions", type: :request do
     end
   end
 
+  context "when the image cannot be downloaded" do
+    let(:body) do
+      {
+        caption: {
+          url: "https://example.com/missing-image.jpg",
+          text: "Caption text"
+        }
+      }.to_json
+    end
+
+    let(:caption_path) { nil }
+
+    it "returns status code 422" do
+      expect(response).to have_http_status(:unprocessable_content)
+    end
+
+    it "does not save the caption" do
+      expect(
+        Caption.find_by(url: "https://example.com/missing-image.jpg")
+      ).to be_nil
+    end
+
+    it "returns the invalid URL error" do
+      expect(response.parsed_body).to eq(
+                                        "code" => "invalid_parameters",
+                                        "title" => "Parameter has an invalid value",
+                                        "description" => "url parameter does not point to a downloadable image."
+                                      )
+    end
+  end
+
   context "when text exceeds 266 characters" do
     let(:body) do
       {
