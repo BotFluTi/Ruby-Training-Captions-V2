@@ -5,7 +5,9 @@ require "rails_helper"
 RSpec.describe CaptionGenerator do
   describe ".generate" do
     let(:original_path) { "images/original_123.png" }
-    let(:caption_path) { "images/caption_123.png" }
+    let(:caption_path) do
+      Rails.root.join("public", "images", "caption_123.png").to_s
+    end
     let(:text) { "Caption text" }
     let(:image) { instance_double(MiniMagick::Image) }
     let(:options) do
@@ -28,6 +30,7 @@ RSpec.describe CaptionGenerator do
 
       allow(image).to receive(:combine_options).and_yield(options)
       allow(image).to receive(:write)
+      allow(FileUtils).to receive(:mkdir_p)
     end
 
     it "adds the caption at the top of the image" do
@@ -43,6 +46,10 @@ RSpec.describe CaptionGenerator do
 
     it "writes and returns the caption image" do
       result = described_class.generate(original_path, text)
+
+      expect(FileUtils)
+        .to have_received(:mkdir_p)
+              .with(Rails.root.join("public", "images"))
 
       expect(image).to have_received(:write).with(caption_path)
       expect(result).to eq(caption_path)

@@ -34,3 +34,7 @@
 # Ignore generated meme images, but keep their directory.
 /images/*
 !/images/.gitkeep
+
+# Ignore generated caption images, but keep their directory.
+/public/images/*
+!/public/images/.gitkeep
