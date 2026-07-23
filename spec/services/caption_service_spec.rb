@@ -48,4 +48,39 @@ RSpec.describe CaptionService do
       end
     end
   end
+
+  describe ".destroy" do
+    let(:caption) do
+      instance_double(
+        Caption,
+        caption_url: "http://example.com/images/caption_123.png",
+        destroy!: true
+      )
+    end
+
+    let(:caption_path) do
+      CaptionGenerator::OUTPUT_FOLDER.join("caption_123.png")
+    end
+
+    let(:original_path) do
+      ImageDownloader::FOLDER_PATH.join("original_123.png")
+    end
+
+    before do
+      allow(FileUtils).to receive(:rm_f)
+    end
+
+    it "removes the generated and original images" do
+      described_class.destroy(caption)
+
+      expect(FileUtils).to have_received(:rm_f).with(caption_path)
+      expect(FileUtils).to have_received(:rm_f).with(original_path)
+    end
+
+    it "deletes the caption record" do
+      described_class.destroy(caption)
+
+      expect(caption).to have_received(:destroy!)
+    end
+  end
 end

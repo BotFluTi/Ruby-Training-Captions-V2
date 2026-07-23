@@ -41,6 +41,14 @@ class CaptionsController < ApplicationController
     }, status: :ok
   end
 
+  def destroy
+    caption = Caption.find(params[:id])
+
+    CaptionService.destroy(caption)
+
+    head :ok
+  end
+
   private
 
   def caption_image_url(caption_path)
