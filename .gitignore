@@ -31,6 +31,10 @@
 # Ignore key files for decrypting credentials and more.
 /config/*.key
 
-# Ignore generated meme images, but keep their directory.
+# Ignore downloaded original images, but keep their directory.
 /images/*
 !/images/.gitkeep
+
+# Ignore generated caption images, but keep their directory.
+/public/images/*
+!/public/images/.gitkeep
