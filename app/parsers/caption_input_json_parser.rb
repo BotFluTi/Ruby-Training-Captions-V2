@@ -13,8 +13,21 @@ class CaptionInputJsonParser
   def parse(body)
     result = Contract.new.call(body)
 
-    raise ValidationError.new(result.errors.to_h) if result.failure?
+    raise ValidationError.new(missing_parameter_error(result)) if result.failure?
 
     result.to_h[:caption]
+  end
+
+  private
+
+  def missing_parameter_error(result)
+    parameter = result.errors.first.path.last
+
+    {
+      code: "missing_parameters",
+      title: "Parameter is missing from the request body",
+      description: "#{parameter} parameter is missing from the request body. " \
+        "It is a required parameter and the request cannot be processed."
+    }
   end
 end

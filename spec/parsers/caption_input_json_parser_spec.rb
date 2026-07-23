@@ -40,8 +40,15 @@ RSpec.describe CaptionInputJsonParser do
       }
     end
 
-    it "raises a validation error" do
-      expect { caption_attributes }.to raise_error(ValidationError)
+    it "raises a missing parameters error" do
+      expect { caption_attributes }.to raise_error(ValidationError) do |error|
+        expect(error.errors).to eq(
+                                  code: "missing_parameters",
+                                  title: "Parameter is missing from the request body",
+                                  description: "url parameter is missing from the request body. " \
+                                    "It is a required parameter and the request cannot be processed."
+                                )
+      end
     end
   end
 
