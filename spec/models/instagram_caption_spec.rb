@@ -140,4 +140,86 @@ RSpec.describe InstagramCaption, type: :model do
                                             )
     end
   end
+
+  describe "filter validations" do
+    %w[blackwhite light_blur hard_blur].each do |filter|
+      it "accepts the #{filter} filter" do
+        caption = described_class.new(
+          type: "image",
+          url: "https://example.com/image.jpg",
+          text: "Caption text",
+          filter: filter
+        )
+
+        expect(caption).to be_valid
+      end
+    end
+
+    it "allows an image caption without a filter" do
+      caption = described_class.new(
+        type: "image",
+        url: "https://example.com/image.jpg",
+        text: "Caption text"
+      )
+
+      expect(caption).to be_valid
+    end
+
+    it "rejects an empty filter" do
+      caption = described_class.new(
+        type: "image",
+        url: "https://example.com/image.jpg",
+        text: "Caption text",
+        filter: ""
+      )
+
+      expect(caption).not_to be_valid
+      expect(caption.errors[:filter]).to include(
+                                           "is not included in the list"
+                                         )
+    end
+
+    it "rejects an unsupported filter" do
+      caption = described_class.new(
+        type: "image",
+        url: "https://example.com/image.jpg",
+        text: "Caption text",
+        filter: "sepia"
+      )
+
+      expect(caption).not_to be_valid
+      expect(caption.errors[:filter]).to include(
+                                           "is not included in the list"
+                                         )
+    end
+
+    it "rejects a filter for a color caption" do
+      caption = described_class.new(
+        type: "color",
+        color: "#003166",
+        text: "Caption text",
+        filter: "blackwhite"
+      )
+
+      expect(caption).not_to be_valid
+      expect(caption.errors[:filter]).to include(
+                                           "is only allowed for image captions"
+                                         )
+    end
+
+    it "rejects a filter for a gradient caption" do
+      caption = described_class.new(
+        type: "gradient",
+        start_color: "#000000",
+        end_color: "#003166",
+        text: "Caption text",
+        filter: "light_blur"
+      )
+
+      expect(caption).not_to be_valid
+      expect(caption.errors[:filter]).to include(
+                                           "is only allowed for image captions"
+                                         )
+    end
+  end
 end

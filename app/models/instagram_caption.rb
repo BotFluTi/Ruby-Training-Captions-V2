@@ -5,6 +5,7 @@ class InstagramCaption < ApplicationRecord
 
   TYPES = %w[image color gradient].freeze
   HEX_COLOR = /\A#[0-9a-fA-F]{6}\z/
+  FILTERS = %w[blackwhite light_blur hard_blur].freeze
 
   validates :type,
             presence: { message: "is blank" },
@@ -13,6 +14,16 @@ class InstagramCaption < ApplicationRecord
   validates :text,
             presence: { message: "is blank" },
             length: { maximum: 266 }
+
+  validates :filter,
+            inclusion: { in: FILTERS },
+            allow_nil: true
+
+  validates :filter,
+            absence: {
+              message: "is only allowed for image captions"
+            },
+            unless: :image?
 
   validates :url,
             presence: { message: "is blank" },
