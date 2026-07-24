@@ -63,4 +63,136 @@ RSpec.describe InstagramCaptionInputJsonParser do
       end
     end
   end
+
+  context "when type is image and url is missing" do
+    let(:body) do
+      {
+        "image" => {
+          "type" => "image",
+          "text" => "Caption text"
+        }
+      }
+    end
+
+    it "raises a missing parameters error" do
+      expect { image_attributes }.to raise_error(ValidationError) do |error|
+        expect(error.errors).to eq(
+                                  code: "missing_parameters",
+                                  title: "Parameter is missing from the request body",
+                                  description: "url parameter is missing from the request body. " \
+                                    "It is a required parameter and the request cannot be processed."
+                                )
+      end
+    end
+  end
+
+  context "when the color input is valid" do
+    let(:body) do
+      {
+        "image" => {
+          "type" => "color",
+          "color" => "#003166",
+          "text" => "Caption text"
+        }
+      }
+    end
+
+    it "returns the color attributes" do
+      expect(image_attributes).to eq(
+                                    type: "color",
+                                    color: "#003166",
+                                    text: "Caption text"
+                                  )
+    end
+  end
+
+  context "when type is color and color is missing" do
+    let(:body) do
+      {
+        "image" => {
+          "type" => "color",
+          "text" => "Caption text"
+        }
+      }
+    end
+
+    it "raises a missing parameters error" do
+      expect { image_attributes }.to raise_error(ValidationError) do |error|
+        expect(error.errors).to eq(
+                                  code: "missing_parameters",
+                                  title: "Parameter is missing from the request body",
+                                  description: "color parameter is missing from the request body. " \
+                                    "It is a required parameter and the request cannot be processed."
+                                )
+      end
+    end
+  end
+
+  context "when the gradient input is valid" do
+    let(:body) do
+      {
+        "image" => {
+          "type" => "gradient",
+          "start_color" => "#000000",
+          "end_color" => "#003166",
+          "text" => "Caption text"
+        }
+      }
+    end
+
+    it "returns the gradient attributes" do
+      expect(image_attributes).to eq(
+                                    type: "gradient",
+                                    start_color: "#000000",
+                                    end_color: "#003166",
+                                    text: "Caption text"
+                                  )
+    end
+  end
+
+  context "when type is gradient and start_color is missing" do
+    let(:body) do
+      {
+        "image" => {
+          "type" => "gradient",
+          "end_color" => "#003166",
+          "text" => "Caption text"
+        }
+      }
+    end
+
+    it "raises a missing parameters error" do
+      expect { image_attributes }.to raise_error(ValidationError) do |error|
+        expect(error.errors).to eq(
+                                  code: "missing_parameters",
+                                  title: "Parameter is missing from the request body",
+                                  description: "start_color parameter is missing from the request body. " \
+                                    "It is a required parameter and the request cannot be processed."
+                                )
+      end
+    end
+  end
+
+  context "when type is gradient and end_color is missing" do
+    let(:body) do
+      {
+        "image" => {
+          "type" => "gradient",
+          "start_color" => "#000000",
+          "text" => "Caption text"
+        }
+      }
+    end
+
+    it "raises a missing parameters error" do
+      expect { image_attributes }.to raise_error(ValidationError) do |error|
+        expect(error.errors).to eq(
+                                  code: "missing_parameters",
+                                  title: "Parameter is missing from the request body",
+                                  description: "end_color parameter is missing from the request body. " \
+                                    "It is a required parameter and the request cannot be processed."
+                                )
+      end
+    end
+  end
 end

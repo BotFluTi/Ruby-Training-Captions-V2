@@ -14,6 +14,23 @@ class InstagramCaptionInputJsonParser
         optional(:end_color).value(:string)
       end
     end
+
+    rule(:image) do
+      case value[:type]
+      when "image"
+        key([ :image, :url ]).failure("is missing") unless value.key?(:url)
+      when "color"
+        key([ :image, :color ]).failure("is missing") unless value.key?(:color)
+      when "gradient"
+        unless value.key?(:start_color)
+          key([ :image, :start_color ]).failure("is missing")
+        end
+
+        unless value.key?(:end_color)
+          key([ :image, :end_color ]).failure("is missing")
+        end
+      end
+    end
   end
 
   def parse(body)
