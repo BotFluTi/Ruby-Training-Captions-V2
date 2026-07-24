@@ -54,4 +54,90 @@ RSpec.describe InstagramCaption, type: :model do
                          caption_url: "http://example.com/images/instagram_3.png"
                        )
   end
+
+  describe "validations" do
+    it "rejects an unsupported type" do
+      caption = described_class.new(
+        type: "video",
+        text: "Caption text"
+      )
+
+      expect(caption).not_to be_valid
+      expect(caption.errors[:type]).to include("is not included in the list")
+    end
+
+    it "requires text" do
+      caption = described_class.new(
+        type: "color",
+        color: "#003166",
+        text: ""
+      )
+
+      expect(caption).not_to be_valid
+      expect(caption.errors[:text]).to include("is blank")
+    end
+
+    it "rejects text longer than 266 characters" do
+      caption = described_class.new(
+        type: "color",
+        color: "#003166",
+        text: "a" * 267
+      )
+
+      expect(caption).not_to be_valid
+      expect(caption.errors[:text]).to include(
+                                         "is too long (maximum is 266 characters)"
+                                       )
+    end
+
+    it "requires a url for an image caption" do
+      caption = described_class.new(
+        type: "image",
+        url: "",
+        text: "Caption text"
+      )
+
+      expect(caption).not_to be_valid
+      expect(caption.errors[:url]).to include("is blank")
+    end
+
+    it "requires a valid HEX color for a color caption" do
+      caption = described_class.new(
+        type: "color",
+        color: "blue",
+        text: "Caption text"
+      )
+
+      expect(caption).not_to be_valid
+      expect(caption.errors[:color]).to include("must be a valid HEX color")
+    end
+
+    it "requires a valid start color for a gradient caption" do
+      caption = described_class.new(
+        type: "gradient",
+        start_color: "black",
+        end_color: "#003166",
+        text: "Caption text"
+      )
+
+      expect(caption).not_to be_valid
+      expect(caption.errors[:start_color]).to include(
+                                                "must be a valid HEX color"
+                                              )
+    end
+
+    it "requires a valid end color for a gradient caption" do
+      caption = described_class.new(
+        type: "gradient",
+        start_color: "#000000",
+        end_color: "blue",
+        text: "Caption text"
+      )
+
+      expect(caption).not_to be_valid
+      expect(caption.errors[:end_color]).to include(
+                                              "must be a valid HEX color"
+                                            )
+    end
+  end
 end
