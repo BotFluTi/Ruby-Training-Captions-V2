@@ -1,9 +1,14 @@
 # frozen_string_literal: true
 
 class CaptionGenerator
-  OUTPUT_FOLDER = Rails.root.join("public", "images")
+  OUTPUT_FOLDER = Rails.root.join("images", "generated")
 
-  def self.generate(file_path, text)
+  def initialize(file_path, text)
+    @file_path = file_path
+    @text = text
+  end
+
+  def generate
     FileUtils.mkdir_p(OUTPUT_FOLDER)
 
     caption_file_name = File.basename(file_path)
@@ -24,4 +29,8 @@ class CaptionGenerator
     image.write(caption_path)
     caption_path
   end
+
+  private
+
+  attr_reader :file_path, :text
 end

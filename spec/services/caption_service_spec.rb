@@ -15,6 +15,13 @@ RSpec.describe CaptionService do
     let(:caption_path) { "images/caption_123.png" }
 
     context "when the image is downloaded successfully" do
+      let(:generator) do
+        instance_double(
+          CaptionGenerator,
+          generate: caption_path
+        )
+      end
+
       before do
         allow(ImageDownloader)
           .to receive(:download)
@@ -22,9 +29,9 @@ RSpec.describe CaptionService do
                 .and_return(original_path)
 
         allow(CaptionGenerator)
-          .to receive(:generate)
+          .to receive(:new)
                 .with(original_path, caption.text)
-                .and_return(caption_path)
+                .and_return(generator)
       end
 
       it "returns the generated caption image path" do
@@ -39,12 +46,12 @@ RSpec.describe CaptionService do
                 .with(caption.url)
                 .and_return(nil)
 
-        allow(CaptionGenerator).to receive(:generate)
+        allow(CaptionGenerator).to receive(:new)
       end
 
       it "returns nil without generating a caption image" do
         expect(described_class.create(caption)).to be_nil
-        expect(CaptionGenerator).not_to have_received(:generate)
+        expect(CaptionGenerator).not_to have_received(:new)
       end
     end
   end

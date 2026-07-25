@@ -5,7 +5,7 @@ class CaptionService
     original_path = ImageDownloader.download(caption.url)
     return nil unless original_path
 
-    CaptionGenerator.generate(original_path, caption.text)
+    CaptionGenerator.new(original_path, caption.text).generate
   end
 
   def self.destroy(caption)
