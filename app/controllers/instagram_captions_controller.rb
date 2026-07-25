@@ -25,6 +25,8 @@ class InstagramCaptionsController < ApplicationController
 
     caption_path = InstagramCaptionService.new(caption).create
 
+    return handle_failed_download unless caption_path
+
     caption.caption_url = caption_image_url(caption_path)
     caption.save!
 
@@ -57,6 +59,14 @@ class InstagramCaptionsController < ApplicationController
       code: "invalid_parameters",
       title: "Parameter has an invalid value",
       description: "#{error.attribute} parameter #{error.message}."
+    }, status: :unprocessable_content
+  end
+
+  def handle_failed_download
+    render json: {
+      code: "invalid_parameters",
+      title: "Parameter has an invalid value",
+      description: "url parameter does not point to a downloadable image."
     }, status: :unprocessable_content
   end
 end

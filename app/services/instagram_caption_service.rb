@@ -6,9 +6,9 @@ class InstagramCaptionService
   end
 
   def create
-    generator = InstagramCaptionGenerator.new(caption)
-
     case caption.type
+    when "image"
+      generate_image
     when "color"
       generator.generate_color
     when "gradient"
@@ -19,4 +19,15 @@ class InstagramCaptionService
   private
 
   attr_reader :caption
+
+  def generate_image
+    original_path = ImageDownloader.download(caption.url)
+    return nil unless original_path
+
+    generator.generate_image(original_path)
+  end
+
+  def generator
+    @generator ||= InstagramCaptionGenerator.new(caption)
+  end
 end

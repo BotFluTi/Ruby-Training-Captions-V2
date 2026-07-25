@@ -160,4 +160,44 @@ RSpec.describe "POST /captions/instagram", type: :request do
       expect(InstagramCaptionService).not_to have_received(:new)
     end
   end
+
+  context "when the image cannot be downloaded" do
+    let(:body) do
+      {
+        image: {
+          type: "image",
+          url: "https://example.com/missing-image.jpg",
+          text: "Caption text"
+        }
+      }.to_json
+    end
+
+    let(:caption_path) { nil }
+
+    it "returns status code 422" do
+      send_request
+
+      expect(response).to have_http_status(:unprocessable_content)
+    end
+
+    it "returns the invalid URL error" do
+      send_request
+
+      expect(response.parsed_body).to eq(
+                                        "code" => "invalid_parameters",
+                                        "title" => "Parameter has an invalid value",
+                                        "description" => "url parameter does not point to a downloadable image."
+                                      )
+    end
+
+    it "does not save the instagram caption" do
+      send_request
+
+      expect(
+        InstagramCaption.find_by(
+          url: "https://example.com/missing-image.jpg"
+        )
+      ).to be_nil
+    end
+  end
 end
