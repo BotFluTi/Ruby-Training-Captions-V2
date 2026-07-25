@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class InstagramCaptionsController < ApplicationController
+  rescue_from ValidationError, with: :handle_caption_input_error
+
   def index
     captions = InstagramCaption.order(:id)
 
@@ -42,6 +44,10 @@ class InstagramCaptionsController < ApplicationController
 
   def caption_image_url(caption_path)
     "#{request.base_url}/images/#{File.basename(caption_path)}"
+  end
+
+  def handle_caption_input_error(error)
+    render json: error.errors, status: :bad_request
   end
 
   def handle_invalid_caption(caption)

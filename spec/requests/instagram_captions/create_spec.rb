@@ -2,55 +2,6 @@
 
 require "rails_helper"
 
-RSpec.describe "GET /captions/instagrams", type: :request do
-  subject(:send_request) { get "/captions/instagrams" }
-
-  context "when there are no instagram captions" do
-    it "returns status code 200" do
-      send_request
-
-      expect(response).to have_http_status(:ok)
-    end
-
-    it "returns an empty collection" do
-      send_request
-
-      expect(response.parsed_body).to eq(
-                                        "captions" => []
-                                      )
-    end
-  end
-
-  context "when an instagram caption exists" do
-    let!(:caption) do
-      InstagramCaption.create!(
-        type: "image",
-        url: "https://example.com/image.jpg",
-        text: "Caption text",
-        filter: "blackwhite",
-        caption_url: "http://example.com/images/instagram_123.png"
-      )
-    end
-
-    it "returns the instagram captions" do
-      send_request
-
-      expect(response.parsed_body).to eq(
-                                        "captions" => [
-                                          {
-                                            "id" => caption.id,
-                                            "url" => caption.url,
-                                            "type" => caption.type,
-                                            "text" => caption.text,
-                                            "filter" => caption.filter,
-                                            "caption_url" => caption.caption_url
-                                          }
-                                        ]
-                                      )
-    end
-  end
-end
-
 RSpec.describe "POST /captions/instagram", type: :request do
   subject(:send_request) do
     post "/captions/instagram",
@@ -140,5 +91,73 @@ RSpec.describe "POST /captions/instagram", type: :request do
                                         "caption_url" => "http://example.com/images/instagram_123.png"
                                       }
                                     )
+  end
+
+  context "when type is missing" do
+    let(:body) do
+      {
+        image: {
+          color: "#003166",
+          text: "Caption text"
+        }
+      }.to_json
+    end
+
+    it "returns status code 400" do
+      send_request
+
+      expect(response).to have_http_status(:bad_request)
+    end
+
+    it "returns the missing parameters error" do
+      send_request
+
+      expect(response.parsed_body).to eq(
+                                        "code" => "missing_parameters",
+                                        "title" => "Parameter is missing from the request body",
+                                        "description" => "type parameter is missing from the request body. " \
+                                          "It is a required parameter and the request cannot be processed."
+                                      )
+    end
+
+    it "does not generate a caption" do
+      send_request
+
+      expect(InstagramCaptionService).not_to have_received(:new)
+    end
+  end
+
+  context "when color is invalid" do
+    let(:body) do
+      {
+        image: {
+          type: "color",
+          color: "blue",
+          text: "Caption text"
+        }
+      }.to_json
+    end
+
+    it "returns status code 422" do
+      send_request
+
+      expect(response).to have_http_status(:unprocessable_content)
+    end
+
+    it "returns the invalid parameter error" do
+      send_request
+
+      expect(response.parsed_body).to eq(
+                                        "code" => "invalid_parameters",
+                                        "title" => "Parameter has an invalid value",
+                                        "description" => "color parameter must be a valid HEX color."
+                                      )
+    end
+
+    it "does not generate a caption" do
+      send_request
+
+      expect(InstagramCaptionService).not_to have_received(:new)
+    end
   end
 end
