@@ -31,6 +31,8 @@ class InstagramCaptionGenerator
 
     image = MiniMagick::Image.open(file_path)
     resize_and_crop_image(image)
+    apply_filter(image)
+    write_caption(image)
 
     output_path = caption_path
     image.write(output_path)
@@ -50,6 +52,7 @@ class InstagramCaptionGenerator
     MiniMagick.convert do |convert|
       convert.size INSTAGRAM_SIZE
       convert << background
+      caption_options(convert)
       convert << output_path
     end
 
@@ -77,6 +80,28 @@ class InstagramCaptionGenerator
     image.resize("#{width}x#{height}^")
     image.gravity("center")
     image.extent("#{width}x#{height}")
+  end
+
+  def apply_filter(image)
+    case caption.filter
+    when "blackwhite"
+      image.colorspace("Gray")
+    when "light_blur"
+      image.blur("0x2")
+    when "hard_blur"
+      image.blur("0x8")
+    end
+  end
+
+  def write_caption(image)
+    image.combine_options do |options|
+      caption_options(options)
+    end
+  end
+
+  def caption_options(options)
+    options.gravity "center"
+    options.draw %(text 0,0 "#{caption.text}")
   end
 
   def caption_path

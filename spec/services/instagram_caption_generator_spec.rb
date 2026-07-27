@@ -4,6 +4,7 @@ require "rails_helper"
 
 RSpec.describe InstagramCaptionGenerator do
   subject(:generator) { described_class.new(caption) }
+  let(:text) { "Caption text" }
 
   let(:uuid) { "123e4567-e89b-42d3-a456-426614174000" }
 
@@ -18,7 +19,9 @@ RSpec.describe InstagramCaptionGenerator do
   let(:convert) do
     double(
       "image command",
-      size: nil
+      size: nil,
+      gravity: nil,
+      draw: nil
     )
   end
 
@@ -37,7 +40,8 @@ RSpec.describe InstagramCaptionGenerator do
     let(:caption) do
       instance_double(
         InstagramCaption,
-        color: "#003166"
+        color: "#003166",
+        text: text
       )
     end
 
@@ -56,11 +60,21 @@ RSpec.describe InstagramCaptionGenerator do
       expect(convert).to have_received(:<<).with("xc:#003166")
     end
 
-    it "writes and returns a uniquely named image" do
+    it "writes and returns unique names" do
       result = generator.generate_color
 
       expect(convert).to have_received(:<<).with(caption_path)
       expect(result).to eq(caption_path)
+    end
+
+    it "adds the caption text" do
+      generator.generate_color
+
+      expect(convert).to have_received(:gravity).with("center")
+
+      expect(convert)
+        .to have_received(:draw)
+              .with(%(text 0,0 "#{text}"))
     end
   end
 
@@ -69,7 +83,8 @@ RSpec.describe InstagramCaptionGenerator do
       instance_double(
         InstagramCaption,
         start_color: "#000000",
-        end_color: "#003166"
+        end_color: "#003166",
+        text: text
       )
     end
 
@@ -83,16 +98,42 @@ RSpec.describe InstagramCaptionGenerator do
               .with("gradient:#000000-#003166")
     end
 
-    it "writes and returns a uniquely named image" do
+    it "writes and returns unique names" do
       result = generator.generate_gradient
 
       expect(convert).to have_received(:<<).with(caption_path)
       expect(result).to eq(caption_path)
     end
+
+    it "adds the caption text" do
+      generator.generate_gradient
+
+      expect(convert).to have_received(:gravity).with("center")
+
+      expect(convert)
+        .to have_received(:draw)
+              .with(%(text 0,0 "#{text}"))
+    end
   end
 
   describe "#generate_image" do
-    let(:caption) { instance_double(InstagramCaption) }
+    let(:filter) { nil }
+    let(:caption) do
+      instance_double(
+        InstagramCaption,
+        filter: filter,
+        text: text
+      )
+    end
+
+    let(:caption_options) do
+      double(
+        "caption options",
+        gravity: nil,
+        draw: nil
+      )
+    end
+
     let(:original_path) { "images/original_123.png" }
     let(:width) { 800 }
     let(:height) { 800 }
@@ -105,6 +146,9 @@ RSpec.describe InstagramCaptionGenerator do
         resize: nil,
         gravity: nil,
         extent: nil,
+        colorspace: nil,
+        blur: nil,
+        combine_options: nil,
         write: nil
       )
     end
@@ -114,6 +158,10 @@ RSpec.describe InstagramCaptionGenerator do
         .to receive(:open)
               .with(original_path)
               .and_return(image)
+
+      allow(image)
+        .to receive(:combine_options)
+              .and_yield(caption_options)
     end
 
     context "when the image width is below 320 pixels" do
@@ -173,11 +221,76 @@ RSpec.describe InstagramCaptionGenerator do
       end
     end
 
-    it "writes and returns a uniquely named image" do
+    it "writes and returns unique names" do
       result = generator.generate_image(original_path)
 
       expect(image).to have_received(:write).with(caption_path)
       expect(result).to eq(caption_path)
+    end
+
+    context "when the blackwhite filter is requested" do
+      let(:filter) { "blackwhite" }
+
+      it "converts the image to grayscale" do
+        generator.generate_image(original_path)
+
+        expect(image)
+          .to have_received(:colorspace)
+                .with("Gray")
+
+        expect(image).not_to have_received(:blur)
+      end
+    end
+
+    context "when the light blur filter is requested" do
+      let(:filter) { "light_blur" }
+
+      it "applies a light blur to the image" do
+        generator.generate_image(original_path)
+
+        expect(image)
+          .to have_received(:blur)
+                .with("0x2")
+
+        expect(image).not_to have_received(:colorspace)
+      end
+    end
+
+    context "when the hard blur filter is requested" do
+      let(:filter) { "hard_blur" }
+
+      it "applies a hard blur to the image" do
+        generator.generate_image(original_path)
+
+        expect(image)
+          .to have_received(:blur)
+                .with("0x8")
+
+        expect(image).not_to have_received(:colorspace)
+      end
+    end
+
+    context "when no filter is requested" do
+      it "does not apply an image filter" do
+        generator.generate_image(original_path)
+
+        expect(image).not_to have_received(:colorspace)
+        expect(image).not_to have_received(:blur)
+      end
+    end
+
+    it "adds the caption text" do
+      generator.generate_image(original_path)
+
+      expect(image).to have_received(:combine_options)
+
+      expect(caption_options)
+        .to have_received(:gravity)
+              .with("center")
+
+      expect(caption_options)
+        .to have_received(:draw)
+              .with(%(text 0,0 "#{text}"))
     end
   end
 end
