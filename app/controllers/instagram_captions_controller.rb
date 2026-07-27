@@ -39,7 +39,8 @@ class InstagramCaptionsController < ApplicationController
         :filter,
         :caption_url
       )
-    }, status: :see_other
+    }, status: :see_other,
+           location: caption.caption_url
   end
 
   private

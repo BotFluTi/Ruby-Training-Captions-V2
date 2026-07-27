@@ -8,8 +8,5 @@ Rails.application.routes.draw do
 
   delete "/captions/:id", to: "captions#destroy"
 
-  post "/signup", to: "users#signup"
-  post "/login", to: "users#login"
-
   get "up" => "rails/health#show", as: :rails_health_check
 end
