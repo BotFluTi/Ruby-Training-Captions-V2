@@ -35,6 +35,3 @@
 /images/*
 !/images/.gitkeep
 
-# Ignore generated caption images, but keep their directory.
-/public/images/*
-!/public/images/.gitkeep
